@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro Vehicular - Comando Especial</title>
+    <style>
+        /* --- CONFIGURACIÓN DE COLORES (Azul, Celeste y Rosado) --- */
+        :root {
+            --bg-rosado: #FCE4EC;
+            --bg-celeste: #E3F2FD;
+            --bg-azul: #1565C0;
+            --bg-azul-claro: #1E88E5;
+            --texto-oscuro: #2C3E50;
+            --texto-claro: #FFFFFF;
+            --borde: #90CAF9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-rosado);
+            color: var(--texto-oscuro);
+            margin: 0;
+            padding: 10px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border: 2px solid var(--borde);
+            background-color: var(--bg-celeste);
+            animation: fadeIn 0.4s;
+        }
+        .login-header {
+            text-align: center;
+            color: var(--bg-azul);
+            margin-bottom: 25px;
+            font-size: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1.4;
+            border-bottom: 2px solid var(--bg-azul);
+            padding-bottom: 12px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-azul);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .top-bar h1 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--bg-azul);
+        }
+        .top-bar .usuario-info {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-top: 4px;
+        }
+        .btn-pestaana-registro {
+            background-color: var(--bg-azul);
+            color: white;
+            border: 2px solid var(--borde);
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
+            box-shadow: 0 2px 5px rgba(21, 101, 192, 0.3);
+        }
+        .btn-pestaana-registro:hover { background-color: var(--bg-azul-claro); }
+
+        .panel-ftc, .panel-gtc {
+            background-color: var(--bg-celeste);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .panel-ftc { border-left: 5px solid var(--bg-azul); }
+        select.gran-selector {
+            width: 100%; padding: 15px; font-size: 16px; font-weight: bold;
+            color: var(--bg-azul); border: 2px solid var(--borde);
+            border-radius: 8px; background-color: white; cursor: pointer; margin-top: 5px;
+        }
+        .panel-gtc h4 { margin: 0 0 10px 0; color: var(--bg-azul); font-size: 14px; }
+        .tabs-gtc { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        .tab-btn-gtc {
+            background-color: white; border: 2px solid var(--bg-azul);
+            color: var(--bg-azul); padding: 10px 15px; border-radius: 25px;
+            cursor: pointer; font-weight: bold; font-size: 13px; flex-grow: 1;
+            text-align: center; transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+        }
+        .tab-btn-gtc.active { 
+            background-color: var(--bg-azul); color: white; 
+            box-shadow: 0 3px 8px rgba(21, 101, 192, 0.4); 
+        }
+
+        .panel-sub-pestanas {
+            background-color: #ffffff; border: 2px solid var(--borde);
+            border-radius: 8px; overflow: hidden; margin-top: 20px;
+        }
+        .header-ubicacion {
+            background-color: var(--bg-azul); color: white; padding: 10px 15px;
+            font-size: 14px; font-weight: bold; text-align: center;
+        }
+        .nav-sub-tabs { display: flex; background-color: var(--bg-celeste); border-bottom: 2px solid var(--borde); }
+        .sub-nav-btn {
+            background-color: transparent; border: none; padding: 15px 10px;
+            cursor: pointer; font-size: 14px; font-weight: bold;
+            color: var(--texto-oscuro); flex-grow: 1; transition: all 0.3s ease;
+        }
+        .sub-nav-btn.active {
+            background-color: white; color: var(--bg-azul); border-bottom: 3px solid var(--bg-azul);
+        }
+        .contenido-sub-pestana { padding: 20px; display: none; animation: fadeIn 0.3s; }
+        .contenido-sub-pestana.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 5px; }
+        .form-group.full-width { grid-column: span 2; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: var(--bg-azul); font-size: 14px; }
+        input[type="text"], input[type="password"], input[type="date"], select, textarea, input[type="file"] {
+            width: 100%; padding: 12px; border: 1px solid var(--borde);
+            border-radius: 6px; box-sizing: border-box; font-size: 15px; background-color: #FAFAFA;
+        }
+        textarea { resize: vertical; height: 85px; }
+        
+        .btn-submit {
+            background-color: var(--bg-azul); color: white; border: none; padding: 15px 20px;
+            cursor: pointer; border-radius: 6px; font-size: 16px; font-weight: bold;
+            width: 100%; margin-top: 15px;
+        }
+        .btn-submit:hover { background-color: var(--bg-azul-claro); }
+
+        .table-container { overflow-x: auto; margin-top: 10px; border: 1px solid var(--borde); border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { border: 1px solid var(--borde); padding: 10px; text-align: left; font-size: 13px; }
+        th { background-color: var(--bg-azul); color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+
+        .btn-descargar-adjunto {
+            display: inline-block; background-color: var(--bg-azul); color: white;
+            padding: 5px 10px; border-radius: 4px; text-decoration: none;
+            font-size: 12px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .btn-descargar-adjunto:hover { background-color: var(--bg-azul-claro); }
+        
+        .btn-editar {
+            background-color: #f39c12; color: white; border: none;
+            padding: 6px 10px; border-radius: 4px; cursor: pointer;
+            font-size: 12px; font-weight: bold; width: 100%;
+        }
+        .btn-editar:hover { background-color: #e67e22; }
+
+        .btn-eliminar {
+            background-color: #e74c3c; color: white; border: none;
+            padding: 6px 10px; border-radius: 4px; cursor: pointer;
+            font-size: 12px; font-weight: bold; width: 100%;
+            margin-top: 3px;
+        }
+        .btn-eliminar:hover { background-color: #c0392b; }
+
+        .oculto { display: none !important; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: var(--bg-celeste); width: 90%; max-width: 600px;
+            padding: 25px; border-radius: 10px; border: 3px solid var(--bg-azul);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: relative; animation: fadeIn 0.3s;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold;
+            color: var(--bg-azul); cursor: pointer;
+        }
+
+        .cargando {
+            text-align: center;
+            padding: 20px;
+            color: var(--bg-azul);
+            font-weight: bold;
+        }
+
+        @media (max-width: 650px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .sub-nav-btn { font-size: 12px; padding: 12px 5px; }
+            .top-bar { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="panelLogin" class="login-container">
+    <div class="login-header">SISTEMA DE GESTIÓN VEHICULAR<br>CONTROL DE SEGURIDAD</div>
+    <form id="loginForm">
+        <div class="form-group">
+            <label>Usuario Técnico:</label>
+            <input type="text" id="usuarioInput" placeholder="Ej. DPTO IV..." required autocomplete="off">
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Contraseña de Acceso:</label>
+            <input type="password" id="passwordInput" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-submit">Validar Credenciales</button>
+    </form>
+</div>
+
+<div id="aplicativoPrincipal" class="container oculto">
+    
+    <div class="top-bar">
+        <h1>Comando de Flota Vehicular
+            <span class="usuario-info" id="usuarioConectado"></span>
+        </h1>
+        <button class="btn-pestaana-registro" onclick="abrirModalRegistro()">✚ Registrar Nuevo Vehículo</button>
+    </div>
+
+    <div class="panel-ftc">
+        <label>1. Seleccione la Unidad o Fuerza de Tarea Conjunta (FTC):</label>
+        <select id="selectFtc" class="gran-selector" onchange="cargarGtc()">
+            <option value="" disabled selected>-- Toque aquí para seleccionar --</option>
+            <option value="COMANDO DEL CEO LCC">COMANDO DEL CEO LCC</option>
+            <option value="FTC AGROPECUARIA">FTC AGROPECUARIA</option>
+            <option value="FTC ANDINA">FTC ANDINA</option>
+            <option value="FTC ALFA">FTC ALFA</option>
+            <option value="FTC BRAVO">FTC BRAVO</option>
+            <option value="FTC CHARLY">FTC CHARLY</option>
+            <option value="FTC DELTA">FTC DELTA</option>
+            <option value="FTC ECO">FTC ECO</option>
+        </select>
+    </div>
+
+    <div id="panelGtc" class="panel-gtc oculto">
+        <h4>2. Seleccione la pestaña operativa de destino:</h4>
+        <div id="contenedorBotonesGtc" class="tabs-gtc"></div>
+    </div>
+
+    <div id="panelOperativo" class="panel-sub-pestanas oculto">
+        <div id="tituloUbicacion" class="header-ubicacion">UBICACIÓN: FTC X - GTC Y</div>
+        
+        <div class="nav-sub-tabs">
+            <button class="sub-nav-btn active" onclick="cambiarSubPestana('sub-historial', this)">📋 Historial</button>
+            <button id="btnSubMantenimiento" class="sub-nav-btn" onclick="cambiarSubPestana('sub-mantenimiento', this)">🔧 Mantenimiento</button>
+            <button id="btnSubFormulario13" class="sub-nav-btn" onclick="cambiarSubPestana('sub-formulario13', this)">📄 Formulario 13</button>
+        </div>
+
+        <div id="sub-historial" class="contenido-sub-pestana active">
+            <h3 id="textoTituloHistorial" style="margin-top:0; color:var(--bg-azul); font-size: 16px;">Historial de Movimientos Vehiculares</h3>
+            <div id="cargandoHistorial" class="cargando">⏳ Cargando datos desde Google Drive...</div>
+            <div class="table-container">
+                <table id="tablaHistorial">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Destacamento</th>
+                            <th>Vehículo / Placa</th>
+                            <th>Responsable</th>
+                            <th>Detalle / Misión</th>
+                            <th>Doc. Respaldo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="sub-mantenimiento" class="contenido-sub-pestana">
+            <h3 style="margin-top:0; color:var(--bg-azul); font-size: 16px;">Registro de Mantenimiento Logístico</h3>
+            <form id="mantenimientoForm">
+                <div class="form-grid">
+                    <div class="form-group"><label>Vehículo (Placa y Tipo):</label><input type="text" id="mantPlaca" placeholder="Ej. 4512-ABC (Camioneta)" required></div>
+                    <div class="form-group"><label>Fecha de Ingreso:</label><input type="date" id="mantFecha" required></div>
+                    <div class="form-group">
+                        <label>Tipo de Mantenimiento:</label>
+                        <select id="mantTipo"><option>Preventivo</option><option>Correctivo</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Final:</label>
+                        <select id="mantEstado"><option>Óptimo / Operativo</option><option>En Observación</option><option>No Operativo</option></select>
+                    </div>
+                    <div class="form-group full-width"><label>Detalles del Trabajo Realizado:</label><textarea id="mantDetalle" placeholder="Cambio de aceite, frenos, repuestos..." required></textarea></div>
+                    <div class="form-group full-width"><label>Factura u Hoja de Ruta (PDF u Imagen):</label><input type="file" id="mantPdf" accept="application/pdf,image/*"></div>
+                </div>
+                <button type="submit" class="btn-submit">Guardar Registro Mecánico</button>
+            </form>
+        </div>
+
+        <div id="sub-formulario13" class="contenido-sub-pestana">
+            <h3 style="margin-top:0; color:var(--bg-azul); font-size: 16px;">Formulario 13 - Orden de Desplazamiento Directo</h3>
+            <form id="form13Form">
+                <div class="form-grid">
+                    <div class="form-group"><label>Número de Formulario 13:</label><input type="text" id="f13Numero" placeholder="Ej. F13-0043" required></div>
+                    <div class="form-group"><label>Vehículo Asignado (Placa):</label><input type="text" id="f13Placa" placeholder="Ej. 3312-KLP" required></div>
+                    <div class="form-group"><label>Fecha de Comisión:</label><input type="date" id="f13Fecha" required></div>
+                    <div class="form-group"><label>Comandante / Operador:</label><input type="text" id="f13Responsable" placeholder="Grado y Nombre" required></div>
+                    <div class="form-group full-width"><label>Objetivo y Destino de la Misión:</label><textarea id="f13Mision" placeholder="Especificar itinerario detallado..." required></textarea></div>
+                    <div class="form-group full-width"><label>Cargar Formulario Escaneado (PDF u Imagen):</label><input type="file" id="f13Pdf" accept="application/pdf,image/*"></div>
+                </div>
+                <button type="submit" class="btn-submit">Registrar Formulario 13</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="modalRegistro" class="modal-overlay oculto">
+    <div class="modal-content">
+        <span class="modal-close" onclick="cerrarModalRegistro()">&times;</span>
+        <h3 style="margin-top: 0; color: var(--bg-azul); border-bottom: 2px solid var(--bg-azul); padding-bottom: 8px;">✚ Alta e Inserción de Vehículo en Unidad</h3>
+        
+        <form id="globalRegistroForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Asignar a Unidad Superior:</label>
+                    <select id="modalRegFtc" onchange="actualizarGtcModal()" required>
+                        <option value="" disabled selected>-- Seleccione Unidad --</option>
+                        <option value="COMANDO DEL CEO LCC">COMANDO DEL CEO LCC</option>
+                        <option value="FTC AGROPECUARIA">FTC AGROPECUARIA</option>
+                        <option value="FTC ANDINA">FTC ANDINA</option>
+                        <option value="FTC ALFA">FTC ALFA</option>
+                        <option value="FTC BRAVO">FTC BRAVO</option>
+                        <option value="FTC CHARLY">FTC CHARLY</option>
+                        <option value="FTC DELTA">FTC DELTA</option>
+                        <option value="FTC ECO">FTC ECO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Asignar a Destacamento (GTC/GRI):</label>
+                    <select id="modalRegGtc" required><option value="" disabled selected>-- Primero elija Unidad --</option></select>
+                </div>
+                <div class="form-group"><label>Placa:</label><input type="text" id="modalPlaca" placeholder="Ej. 2234-KLD" required></div>
+                <div class="form-group"><label>Marca / Modelo:</label><input type="text" id="modalMarca" placeholder="Ej. Toyota Hilux 2024" required></div>
+                <div class="form-group"><label>Color Exterior:</label><input type="text" id="modalColor" placeholder="Ej. Verde Olivo" required></div>
+                
+                <div class="form-group"><label>Responsable Asignado:</label><input type="text" id="modalResponsable" placeholder="Grado y Nombre" required></div>
+                
+                <div class="form-group full-width"><label>Documento de Respaldo o Acta (PDF u Imagen):</label><input type="file" id="modalPdf" accept="application/pdf,image/*"></div>
+            </div>
+            <button type="submit" class="btn-submit">Guardar Registro Inicial</button>
+        </form>
+    </div>
+</div>
+
+<div id="modalEditar" class="modal-overlay oculto">
+    <div class="modal-content">
+        <span class="modal-close" onclick="cerrarModalEditar()">&times;</span>
+        <h3 style="margin-top: 0; color: var(--bg-azul); border-bottom: 2px solid var(--bg-azul); padding-bottom: 8px;">✏️ Editar Registro Vehicular</h3>
+        <form id="formEditarRegistro">
+            <input type="hidden" id="editId">
+            <div class="form-group"><label>Placa / Vehículo:</label><input type="text" id="editPlaca" required></div>
+            <div class="form-group"><label>Responsable:</label><input type="text" id="editResponsable" required></div>
+            
+            <div class="form-group full-width">
+                <label>Actualizar Documento de Respaldo (Opcional):</label>
+                <input type="file" id="editPdf" accept="application/pdf,image/*">
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">* Deja este campo en blanco si deseas conservar el documento que ya está subido.</small>
+            </div>
+
+            <div class="form-group full-width"><label>Detalle:</label><textarea id="editDetalle" required></textarea></div>
+            <button type="submit" class="btn-submit">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// ============================================
+// CONFIGURACIÓN - ¡CAMBIAR ESTOS VALORES!
+// ============================================
+// DESPUÉS DE PUBLICAR EL SCRIPT EN APPS SCRIPT,
+// COPIA LA URL Y PÉGALA AQUÍ:
+const API_URL = 'https://script.google.com/macros/s/AKfycbz2Cca2wtx9dvu2l7An_RXxaVlmRyHwb8n-gmBJVO_LFFT0vFL8nI7iG8ko7RbrbjO8zg/exec';
+
+// USUARIOS AUTORIZADOS (puedes agregar más)
+const USUARIOS_AUTORIZADOS = {
+    'DPTO IV LOG': 'DPTOIVLOG',
+    'OFICIAL DIA': 'OD2024',
+    'COMANDANTE': 'CMD2024'
+};
+
+// ============================================
+// VARIABLES GLOBALES
+// ============================================
+let ftcActiva = "";
+let gtcActiva = "";
+let usuarioActual = "";
+let registrosCache = [];
+
+// ============================================
+// ESTRUCTURA DE DATOS (para el diccionario)
+// ============================================
+const diccionario = {
+    "COMANDO DEL CEO LCC": [],
+    "FTC AGROPECUARIA": ["GTC. CHAGUAYA", "GTC. GUAQUI", "GTC. LACAYA", "GTC. PUERTO ACOSTA"],
+    "FTC ANDINA": ["GTC. SAJAMA", "GTC. COSAPA", "GTC. MACAYA", "GRI. LAGUNAS 1", "GRI. LAGUNAS 2", "GRI. CURAHUARA"],
+    "FTC ALFA": ["GTC. LOS PATOS", "GTC. MAUIRIPUSUMA", "GTC. SANTIAGO DE MACHACA"],
+    "FTC BRAVO": ["GTC. VITALINA", "GTC. PISIGA SUCRE", "GTC. MATUTE", "GTC. JULO", "GTC. PACOCAHUA", "GTC. CARAHUANO", "GTC. HUACHACALLA", "GTC. TOLDO", "GRI. SABAYA", "GRI. HUACHACALLA"],
+    "FTC CHARLY": ["GTC. LLICA", "GTC. EMPEXA", "GTC. EST. AVAROA", "GTC. LA QUECA", "GTC. HUAYLLAS", "GTC. LA CHELA", "GTC. SEJCIHUA", "GTC. BELLA VISTA", "GTC. TRES CRUCES"],
+    "FTC DELTA": ["GTC. TUPIZA", "GTC. VILLAZON"],
+    "FTC ECO": ["GTC. VILLAMONTES", "GTC. IBIBOBO", "GTC. YACUIBA", "GTC. CANDADO"]
+};
+
+// ============================================
+// FUNCIONES DE CONEXIÓN CON GOOGLE DRIVE
+// ============================================
+
+// Función para guardar registro con archivo
+async function guardarRegistroDrive(datos, archivo) {
+    try {
+        const formData = new FormData();
+        formData.append('accion', 'guardar');
+        formData.append('datos', JSON.stringify(datos));
+        formData.append('usuario', usuarioActual);
+        
+        if (archivo) {
+            const reader = new FileReader();
+            const base64 = await new Promise((resolve) => {
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(archivo);
+            });
+            formData.append('archivo', base64);
+            formData.append('nombreArchivo', archivo.name);
+        }
+        
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const resultado = await response.json();
+        return resultado;
+    } catch (error) {
+        console.error('Error al guardar:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Función para obtener todos los registros
+async function obtenerRegistrosDrive() {
+    try {
+        const response = await fetch(`${API_URL}?accion=obtener`);
+        const data = await response.json();
+        if (data.success) {
+            registrosCache = data.registros || [];
+            return registrosCache;
+        } else {
+            console.error('Error:', data.error);
+            return [];
+        }
+    } catch (error) {
+        console.error('Error al obtener registros:', error);
+        return [];
+    }
+}
+
+// Función para eliminar registro y archivo
+async function eliminarRegistroDrive(idRegistro) {
+    try {
+        const formData = new FormData();
+        formData.append('accion', 'eliminar');
+        formData.append('id', idRegistro);
+        formData.append('usuario', usuarioActual);
+        
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: formData
+        });
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error al eliminar:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Función para actualizar registro
+async function actualizarRegistroDrive(idRegistro, datos, archivo) {
+    try {
+        const formData = new FormData();
+        formData.append('accion', 'actualizar');
+        formData.append('id', idRegistro);
+        formData.append('datos', JSON.stringify(datos));
+        formData.append('usuario', usuarioActual);
+        
+        if (archivo) {
+            const reader = new FileReader();
+            const base64 = await new Promise((resolve) => {
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(archivo);
+            });
+            formData.append('archivo', base64);
+            formData.append('nombreArchivo', archivo.name);
+        }
+        
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: formData
+        });
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error al actualizar:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ============================================
+// SISTEMA DE LOGIN
+// ============================================
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const usuario = document.getElementById('usuarioInput').value;
+    const contrasena = document.getElementById('passwordInput').value;
+
+    // Verificar en la lista de usuarios autorizados
+    if (USUARIOS_AUTORIZADOS[usuario] === contrasena) {
+        usuarioActual = usuario;
+        document.getElementById('panelLogin').classList.add('oculto');
+        document.getElementById('aplicativoPrincipal').classList.remove('oculto');
+        
+        // Mostrar usuario conectado
+        document.getElementById('usuarioConectado').textContent = `👤 Conectado: ${usuario}`;
+        
+        // Cargar datos iniciales
+        cargarDatosIniciales();
+    } else {
+        alert("❌ CONTROL DE SEGURIDAD: Credenciales Incorrectas. Acceso Denegado.");
+    }
+});
+
+// ============================================
+// FUNCIONES DE CARGA INICIAL
+// ============================================
+async function cargarDatosIniciales() {
+    // Cargar todos los registros desde Google Drive
+    await obtenerRegistrosDrive();
+    
+    // Si no hay registros en Drive, intentar migrar desde localStorage
+    if (registrosCache.length === 0) {
+        const datosLocales = JSON.parse(localStorage.getItem('FTC_HISTORIAL')) || [];
+        if (datosLocales.length > 0) {
+            if (confirm('📤 Se encontraron datos locales. ¿Deseas migrarlos a Google Drive?')) {
+                await migrarDatosLocales(datosLocales);
+            }
+        }
+    }
+}
+
+// ============================================
+// MIGRACIÓN DE DATOS LOCALES
+// ============================================
+async function migrarDatosLocales(datosLocales) {
+    let migrados = 0;
+    for (const registro of datosLocales) {
+        const datos = {
+            fecha: registro.fecha || new Date().toLocaleDateString(),
+            ftc: registro.ftc || 'SIN FTC',
+            gtc: registro.gtc || 'SIN GTC',
+            placa: registro.vehiculo || 'SIN PLACA',
+            marcaModelo: registro.marcaModelo || 'SIN MARCA',
+            color: registro.color || 'SIN COLOR',
+            responsable: registro.responsable || 'SIN RESPONSABLE',
+            detalle: registro.detalle || 'SIN DETALLE',
+            tipoDoc: registro.tipoDoc || 'Registro Inicial'
+        };
+        
+        // Si tiene archivo, convertirlo a base64
+        let archivo = null;
+        if (registro.archivo) {
+            try {
+                const response = await fetch(registro.archivo);
+                const blob = await response.blob();
+                archivo = new File([blob], registro.nombreArchivo || 'documento.pdf', { type: blob.type });
+            } catch (e) {
+                console.warn('No se pudo migrar el archivo:', e);
+            }
+        }
+        
+        const resultado = await guardarRegistroDrive(datos, archivo);
+        if (resultado.success) migrados++;
+    }
+    
+    alert(`✅ Migración completada: ${migrados} de ${datosLocales.length} registros migrados a Google Drive.`);
+    await obtenerRegistrosDrive();
+}
+
+// ============================================
+// NAVEGACIÓN Y PESTAÑAS
+// ============================================
+function cargarGtc() {
+    ftcActiva = document.getElementById('selectFtc').value;
+    const panelGtc = document.getElementById('panelGtc');
+    const contenedor = document.getElementById('contenedorBotonesGtc');
+    document.getElementById('panelOperativo').classList.add('oculto');
+    gtcActiva = "";
+
+    if (diccionario[ftcActiva]) {
+        panelGtc.classList.remove('oculto');
+        contenedor.innerHTML = "";
+        const btnFtcTodo = document.createElement('button');
+        btnFtcTodo.className = "tab-btn-gtc";
+        btnFtcTodo.textContent = ftcActiva;
+        btnFtcTodo.onclick = function() { activarOperaciones("TODAS", this); };
+        contenedor.appendChild(btnFtcTodo);
+
+        diccionario[ftcActiva].forEach(gtc => {
+            const btn = document.createElement('button');
+            btn.className = "tab-btn-gtc";
+            btn.textContent = gtc;
+            btn.onclick = function() { activarOperaciones(gtc, this); };
+            contenedor.appendChild(btn);
+        });
+    }
+}
+
+function activarOperaciones(gtcSeleccionado, btnGtc) {
+    document.querySelectorAll('.tab-btn-gtc').forEach(b => b.classList.remove('active'));
+    btnGtc.classList.add('active');
+    gtcActiva = gtcSeleccionado;
+    document.getElementById('panelOperativo').classList.remove('oculto');
+    
+    if(gtcActiva === "TODAS") {
+        document.getElementById('tituloUbicacion').textContent = `COMANDO CENTRAL ➔ ${ftcActiva}`;
+        document.getElementById('textoTituloHistorial').textContent = "Historial consolidado e integral de la Fuerza o Unidad Superior";
+    } else {
+        document.getElementById('tituloUbicacion').textContent = `${ftcActiva} ➔ ${gtcActiva}`;
+        document.getElementById('textoTituloHistorial').textContent = "Historial de Movimientos Vehiculares";
+    }
+    refrescarTablaHistorial();
+    cambiarSubPestana('sub-historial', document.querySelector('.sub-nav-btn'));
+}
+
+function cambiarSubPestana(idSub, btnActual) {
+    document.querySelectorAll('.contenido-sub-pestana').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sub-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(idSub).classList.add('active');
+    btnActual.classList.add('active');
+}
+
+// ============================================
+// RENDERIZADO DE TABLA
+// ============================================
+function refrescarTablaHistorial() {
+    const tbody = document.querySelector('#tablaHistorial tbody');
+    const cargando = document.getElementById('cargandoHistorial');
+    
+    if (cargando) cargando.style.display = 'block';
+    tbody.innerHTML = '';
+    
+    setTimeout(() => {
+        const registrosFiltrados = registrosCache.filter(r => {
+            return r.FTC === ftcActiva && (gtcActiva === "TODAS" || r.GTC === gtcActiva);
+        });
+        
+        if (cargando) cargando.style.display = 'none';
+        
+        if (registrosFiltrados.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#7f8c8d;">No hay movimientos registrados aquí.</td></tr>`;
+            return;
+        }
+        
+        // Mostrar registros (más recientes primero)
+        registrosFiltrados.reverse().forEach(r => {
+            let renderAdjunto = `<span style="color:#777; font-style:italic;">Ninguno</span>`;
+            if (r.URL_ARCHIVO) {
+                renderAdjunto = `<a href="${r.URL_ARCHIVO}" target="_blank" class="btn-descargar-adjunto">📥 Ver en Drive</a>`;
+            }
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>${r.FECHA || 'Sin fecha'}</td>
+                    <td style="color:#1565C0; font-weight:bold;">${r.GTC || 'Sin GTC'}</td>
+                    <td><strong>${r.PLACA || 'Sin placa'}</strong></td>
+                    <td>${r.RESPONSABLE || 'Sin responsable'}</td>
+                    <td>${r.DETALLE || 'Sin detalle'}</td>
+                    <td>${renderAdjunto}</td>
+                    <td>
+                        <button class="btn-editar" onclick="abrirModalEditar('${r.ID}')">✏️ Editar</button>
+                        <button class="btn-eliminar" onclick="eliminarRegistro('${r.ID}')">🗑️ Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }, 300);
+}
+
+// ============================================
+// REGISTRO GLOBAL (Modal)
+// ============================================
+function abrirModalRegistro() { document.getElementById('modalRegistro').classList.remove('oculto'); }
+
+function cerrarModalRegistro() {
+    document.getElementById('modalRegistro').classList.add('oculto');
+    document.getElementById('globalRegistroForm').reset();
+    document.getElementById('modalRegGtc').innerHTML = '<option value="" disabled selected>-- Primero elija Unidad --</option>';
+}
+
+function actualizarGtcModal() {
+    const ftcSeleccionada = document.getElementById('modalRegFtc').value;
+    const selectGtc = document.getElementById('modalRegGtc');
+    selectGtc.innerHTML = '<option value="" disabled selected>-- Seleccione Destacamento --</option>';
+    if(diccionario[ftcSeleccionada]) {
+        const optBase = document.createElement('option');
+        optBase.value = "COMANDO GENERAL";
+        optBase.textContent = `COMANDO GENERAL ${ftcSeleccionada}`;
+        selectGtc.appendChild(optBase);
+        diccionario[ftcSeleccionada].forEach(gtc => {
+            const opt = document.createElement('option');
+            opt.value = gtc;
+            opt.textContent = gtc;
+            selectGtc.appendChild(opt);
+        });
+    }
+}
+
+document.getElementById('globalRegistroForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const ftcDestino = document.getElementById('modalRegFtc').value;
+    const gtcDestino = document.getElementById('modalRegGtc').value;
+    const placa = document.getElementById('modalPlaca').value.toUpperCase();
+    const marcaModelo = document.getElementById('modalMarca').value.toUpperCase();
+    const color = document.getElementById('modalColor').value.toUpperCase();
+    const responsable = document.getElementById('modalResponsable').value.toUpperCase();
+    const inputPdf = document.getElementById('modalPdf');
+    const fechaActual = new Date().toLocaleDateString();
+    const detalleFinal = `REGISTRO INICIAL DE VEHÍCULO - Características: ${marcaModelo}, Color: ${color}. Ingreso a parque automotor de la unidad.`;
+
+    const datos = {
+        fecha: fechaActual,
+        ftc: ftcDestino,
+        gtc: gtcDestino,
+        placa: placa,
+        marcaModelo: marcaModelo,
+        color: color,
+        responsable: responsable,
+        detalle: detalleFinal,
+        tipoDoc: 'Registro Inicial'
+    };
+
+    const archivo = inputPdf.files[0];
+    const resultado = await guardarRegistroDrive(datos, archivo);
+    
+    if (resultado.success) {
+        alert(`✅ Vehículo [${placa}] registrado exitosamente en Google Drive.`);
+        await obtenerRegistrosDrive();
+        if(ftcDestino === ftcActiva && (gtcDestino === gtcActiva || gtcActiva === "TODAS")) {
+            refrescarTablaHistorial();
+        }
+        cerrarModalRegistro();
+    } else {
+        alert(`❌ Error al guardar: ${resultado.error || 'Error desconocido'}`);
+    }
+});
+
+// ============================================
+// EDICIÓN DE REGISTROS
+// ============================================
+function abrirModalEditar(id) {
+    const registro = registrosCache.find(r => r.ID == id);
+    if(registro) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editPlaca').value = registro.PLACA || '';
+        document.getElementById('editResponsable').value = registro.RESPONSABLE || '';
+        document.getElementById('editDetalle').value = registro.DETALLE || '';
+        document.getElementById('editPdf').value = "";
+        document.getElementById('modalEditar').classList.remove('oculto');
+    }
+}
+
+function cerrarModalEditar() { document.getElementById('modalEditar').classList.add('oculto'); }
+
+document.getElementById('formEditarRegistro').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const placa = document.getElementById('editPlaca').value.toUpperCase();
+    const responsable = document.getElementById('editResponsable').value.toUpperCase();
+    const detalle = document.getElementById('editDetalle').value;
+    const inputPdf = document.getElementById('editPdf');
+    
+    const datos = {
+        placa: placa,
+        responsable: responsable,
+        detalle: detalle
+    };
+    
+    const archivo = inputPdf.files[0];
+    const resultado = await actualizarRegistroDrive(id, datos, archivo);
+    
+    if (resultado.success) {
+        alert('✅ Registro actualizado correctamente.');
+        await obtenerRegistrosDrive();
+        refrescarTablaHistorial();
+        cerrarModalEditar();
+    } else {
+        alert(`❌ Error al actualizar: ${resultado.error || 'Error desconocido'}`);
+    }
+});
+
+// ============================================
+// ELIMINAR REGISTRO
+// ============================================
+async function eliminarRegistro(id) {
+    if (!confirm('⚠️ ¿Estás seguro de eliminar este registro y su archivo asociado? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    const resultado = await eliminarRegistroDrive(id);
+    if (resultado.success) {
+        alert('✅ Registro eliminado correctamente.');
+        await obtenerRegistrosDrive();
+        refrescarTablaHistorial();
+    } else {
+        alert(`❌ Error al eliminar: ${resultado.error || 'Error desconocido'}`);
+    }
+}
+
+// ============================================
+// FORMULARIOS: MANTENIMIENTO Y F13
+// ============================================
+document.getElementById('mantenimientoForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const vehiculo = document.getElementById('mantPlaca').value.toUpperCase();
+    const fechaObj = new Date(document.getElementById('mantFecha').value);
+    const fechaFormat = new Date(fechaObj.getTime() + fechaObj.getTimezoneOffset() * 60000).toLocaleDateString();
+    const tipo = document.getElementById('mantTipo').value;
+    const estado = document.getElementById('mantEstado').value;
+    const detalleMecanico = document.getElementById('mantDetalle').value;
+    const inputPdf = document.getElementById('mantPdf');
+    const gtcDestinoRegistro = (gtcActiva === "TODAS") ? "COMANDO GENERAL" : gtcActiva;
+
+    const datos = {
+        fecha: fechaFormat,
+        ftc: ftcActiva,
+        gtc: gtcDestinoRegistro,
+        placa: vehiculo,
+        marcaModelo: 'MANTENIMIENTO',
+        color: 'N/A',
+        responsable: 'Taller / Logística',
+        detalle: `MANTENIMIENTO ${tipo.toUpperCase()}: ${detalleMecanico}. Estado Final: ${estado}.`,
+        tipoDoc: 'Mantenimiento'
+    };
+
+    const archivo = inputPdf.files[0];
+    const resultado = await guardarRegistroDrive(datos, archivo);
+    
+    if (resultado.success) {
+        alert('✅ Mantenimiento registrado correctamente.');
+        await obtenerRegistrosDrive();
+        refrescarTablaHistorial();
+        this.reset();
+        cambiarSubPestana('sub-historial', document.querySelectorAll('.sub-nav-btn')[0]);
+    } else {
+        alert(`❌ Error al guardar: ${resultado.error || 'Error desconocido'}`);
+    }
+});
+
+document.getElementById('form13Form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const nroForm = document.getElementById('f13Numero').value.toUpperCase();
+    const vehiculo = document.getElementById('f13Placa').value.toUpperCase();
+    const fechaObj = new Date(document.getElementById('f13Fecha').value);
+    const fechaFormat = new Date(fechaObj.getTime() + fechaObj.getTimezoneOffset() * 60000).toLocaleDateString();
+    const responsable = document.getElementById('f13Responsable').value.toUpperCase();
+    const mision = document.getElementById('f13Mision').value;
+    const inputPdf = document.getElementById('f13Pdf');
+    const gtcDestinoRegistro = (gtcActiva === "TODAS") ? "COMANDO GENERAL" : gtcActiva;
+
+    const datos = {
+        fecha: fechaFormat,
+        ftc: ftcActiva,
+        gtc: gtcDestinoRegistro,
+        placa: vehiculo,
+        marcaModelo: 'FORMULARIO 13',
+        color: 'N/A',
+        responsable: responsable,
+        detalle: `FORM. 13 NRO: ${nroForm}. Misión/Destino: ${mision}`,
+        tipoDoc: 'Formulario 13'
+    };
+
+    const archivo = inputPdf.files[0];
+    const resultado = await guardarRegistroDrive(datos, archivo);
+    
+    if (resultado.success) {
+        alert('✅ Formulario 13 registrado correctamente.');
+        await obtenerRegistrosDrive();
+        refrescarTablaHistorial();
+        this.reset();
+        cambiarSubPestana('sub-historial', document.querySelectorAll('.sub-nav-btn')[0]);
+    } else {
+        alert(`❌ Error al guardar: ${resultado.error || 'Error desconocido'}`);
+    }
+});
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+console.log('🚗 Sistema de Gestión Vehicular con Google Drive');
+console.log('ℹ️ Configura la API_URL con la URL de tu Google Apps Script');
+
+// Al cargar la página, verificar si hay datos en localStorage para migrar
+window.addEventListener('load', function() {
+    // Si ya hay datos en localStorage y no se han migrado aún
+    const datosLocales = JSON.parse(localStorage.getItem('FTC_HISTORIAL')) || [];
+    if (datosLocales.length > 0) {
+        console.log(`📦 Se encontraron ${datosLocales.length} registros locales para migrar.`);
+    }
+});
+</script>
+
+</body>
+</html>
