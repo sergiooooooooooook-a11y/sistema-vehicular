@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro Vehicular - Comando Especial</title>
     <style>
-        /* --- CONFIGURACIÓN DE COLORES (Azul, Celeste y Rosado) --- */
         :root {
             --bg-rosado: #FCE4EC;
             --bg-celeste: #E3F2FD;
@@ -395,9 +394,10 @@
 
 <script>
 // ============================================
-// CONFIGURACIÓN - ¡CAMBIAR ESTOS VALORES!
+// 🔥 CONFIGURACIÓN CON PROXY CORS
 // ============================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbzOCqW4uS5yr4-1I6OVQd1kLb3Wkz38959NT5elr1KFtufWpuWqVmkQ3nQEp9aZKN6knQ/exec';
+// Esta URL usa un proxy para evitar problemas de CORS
+const API_URL = 'https://corsproxy.io/?' + encodeURIComponent('https://script.google.com/macros/s/AKfycbzOCqW4uS5yr4-1I6OVQd1kLb3Wkz38959NT5elr1KFtufWpuWqVmkQ3nQEp9aZKN6knQ/exec');
 
 // USUARIOS AUTORIZADOS
 const USUARIOS_AUTORIZADOS = {
@@ -429,7 +429,7 @@ const diccionario = {
 };
 
 // ============================================
-// FUNCIONES DE CONEXIÓN CON GOOGLE DRIVE
+// FUNCIONES DE CONEXIÓN CON GOOGLE DRIVE (CON PROXY)
 // ============================================
 
 function fileToBase64(file) {
@@ -443,6 +443,9 @@ function fileToBase64(file) {
 
 async function guardarRegistroDrive(datos, archivo) {
     try {
+        console.log('📤 Guardando registro con proxy...');
+        console.log('📍 URL:', API_URL);
+        
         const datosEnvio = {
             accion: 'guardar',
             datos: JSON.stringify(datos),
@@ -450,6 +453,7 @@ async function guardarRegistroDrive(datos, archivo) {
         };
         
         if (archivo) {
+            console.log('📎 Procesando archivo:', archivo.name);
             const base64 = await fileToBase64(archivo);
             datosEnvio.archivo = base64;
             datosEnvio.nombreArchivo = archivo.name;
@@ -457,29 +461,47 @@ async function guardarRegistroDrive(datos, archivo) {
         
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Origin': window.location.origin
+            },
             body: JSON.stringify(datosEnvio)
         });
         
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const resultado = await response.json();
+        console.log('✅ Resultado:', resultado);
+        return resultado;
     } catch (error) {
-        console.error('Error al guardar:', error);
+        console.error('❌ Error al guardar:', error);
         return { success: false, error: error.message };
     }
 }
 
 async function obtenerRegistrosDrive() {
     try {
-        const response = await fetch(`${API_URL}?accion=obtener`);
+        console.log('📥 Obteniendo registros con proxy...');
+        const response = await fetch(`${API_URL}?accion=obtener`, {
+            method: 'GET',
+            headers: { 'Origin': window.location.origin }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
         const data = await response.json();
         if (data.success) {
             registrosCache = data.registros || [];
+            console.log(`✅ ${registrosCache.length} registros cargados`);
             return registrosCache;
         }
         return [];
     } catch (error) {
-        console.error('Error al obtener:', error);
+        console.error('❌ Error al obtener:', error);
         return [];
     }
 }
@@ -488,7 +510,10 @@ async function eliminarRegistroDrive(idRegistro) {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Origin': window.location.origin
+            },
             body: JSON.stringify({
                 accion: 'eliminar',
                 id: idRegistro,
@@ -518,7 +543,10 @@ async function actualizarRegistroDrive(idRegistro, datos, archivo) {
         
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Origin': window.location.origin
+            },
             body: JSON.stringify(datosEnvio)
         });
         return await response.json();
@@ -865,8 +893,8 @@ document.getElementById('form13Form').addEventListener('submit', async function(
 // ============================================
 // INICIALIZACIÓN
 // ============================================
-console.log('🚗 Sistema de Gestión Vehicular v2.0');
-console.log('🔗 API URL:', API_URL);
+console.log('🚗 Sistema de Gestión Vehicular v3.0 (con proxy)');
+console.log('🔗 Proxy URL:', API_URL);
 console.log('🌐 Hosting: GitHub Pages');
 
 window.addEventListener('load', function() {
